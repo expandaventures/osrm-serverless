@@ -1,0 +1,27 @@
+{
+  "name": "osrm-serverless",
+  "version": "1.0.0",
+  "description": "OSRM - Servless to run in AWS Lambda",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expandaventures/osrm-serverless.git"
+  },
+  "keywords": [
+    "OSRM",
+    "Lambda"
+  ],
+  "author": "Luis Alberto Cruz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expandaventures/osrm-serverless/issues"
+  },
+  "homepage": "https://github.com/expandaventures/osrm-serverless#readme",
+  "dependencies": {
+    "aws-serverless-express": "^3.1.0",
+    "express": "^4.16.2"
+  }
+}

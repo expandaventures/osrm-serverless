@@ -1,30 +1,51 @@
 'use strict'
-const awsServerlessExpress = require('aws-serverless-express')
-const app = require('./app')
+const express = require('express')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const compression = require('compression')
+const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
+const app = express()
 
-// NOTE: If you get ERR_CONTENT_DECODING_FAILED in your browser, this is likely
-// due to a compressed response (e.g. gzip) which has not been handled correctly
-// by aws-serverless-express and/or API Gateway. Add the necessary MIME types to
-// binaryMimeTypes below, then redeploy (`npm run package-deploy`)
-const binaryMimeTypes = [
-  'application/javascript',
-  'application/json',
-  'application/octet-stream',
-  'application/xml',
-  'font/eot',
-  'font/opentype',
-  'font/otf',
-  'image/jpeg',
-  'image/png',
-  'image/svg+xml',
-  'text/comma-separated-values',
-  'text/css',
-  'text/html',
-  'text/javascript',
-  'text/plain',
-  'text/text',
-  'text/xml'
-]
-const server = awsServerlessExpress.createServer(app, null, binaryMimeTypes)
+var ApiBuilder = require("claudia-api-builder");
+var api = new ApiBuilder();
 
-exports.handler = (event, context) => awsServerlessExpress.proxy(server, event, context)
+const OSRM = require('osrm');
+
+let osrm = new OSRM('${__dirname}data/mexico-latest.osrm');
+
+app.set('view engine', 'pug')
+app.use(compression())
+app.use(cors())
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(awsServerlessExpressMiddleware.eventContext())
+
+app.get('/', (req, res) => {
+  res.render('index', {
+    apiUrl: req.apiGateway ? `https://${req.apiGateway.event.headers.Host}/${req.apiGateway.event.requestContext.stage}` : 'http://localhost:3000'
+  })
+})
+
+app.get('/match', (req, res) => {
+  let options = {
+    let input = req.query.coordinates
+    input = input.split(';')
+    coordinates = array()
+    for i = 0 i < input.length, i++{
+      a = input[i].split(',');
+      coordinates.push(a)
+    }
+    coordinates: coordinates,
+    timestamps: req.query.timestamp.split(';')
+  };
+  osrm.match(options, function(err, response) {
+      if (err) throw err;
+      console.log(response.tracepoints); // array of Waypoint objects
+      console.log(response.matchings); // array of Route objects
+      res.json(response)
+  });
+
+})
+
+// Export your express server so you can import it in the lambda function.
+module.exports = api

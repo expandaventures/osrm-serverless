@@ -1,21 +1,42 @@
-const ApiBuilder = require("claudia-api-builder");
-let api = new ApiBuilder();
+'use strict'
+const express = require('express')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const compression = require('compression')
+const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
+const app = express()
 
 const OSRM = require('osrm');
-let osrm = new OSRM('data/mexico-latest.osrm');
 
-api.get('/match/{coordinates, timestamp}', function (request) {
-  let options = {
-    let input = request.pathParams.coordinates
+let osrm = new OSRM('${__dirname}data/mexico-latest.osrm');
+
+app.set('view engine', 'pug')
+app.use(compression())
+app.use(cors())
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(awsServerlessExpressMiddleware.eventContext())
+
+app.get('/', (req, res) => {
+  res.render('index', {
+    apiUrl: req.apiGateway ? `https://${req.apiGateway.event.headers.Host}/${req.apiGateway.event.requestContext.stage}` : 'http://localhost:3000'
+  })
+})
+app.get('/match', (req, res) => {
+
+  let input = req.query.coordinates
     input = input.split(';')
-    coordinates = array()
-    for i = 0 i < input.length, i++{
-      a = input[i].split(',');
-      coordinates.push(a)
+    let coordinates = new Array()
+    for (var i = 0; i < input.length; i++) {
+        var a = input[i].split(',');
+        coordinates.push(a)
     }
-    coordinates: coordinates,
-    timestamps: request.pathParams.timestamp.split(';')
-  };
+
+    let options = {
+        coordinates: coordinates,
+    timestamps: req.query.timestamp.split(';')
+    }
+
   osrm.match(options, function(err, response) {
       if (err) throw err;
       console.log(response.tracepoints); // array of Waypoint objects
@@ -26,4 +47,4 @@ api.get('/match/{coordinates, timestamp}', function (request) {
 })
 
 // Export your express server so you can import it in the lambda function.
-module.exports = api
+module.exports = app

@@ -2,7 +2,7 @@
   "name": "osrm-serverless",
   "version": "1.0.0",
   "description": "Example application for running a Node Express app on AWS Lambda using Amazon API Gateway.",
-  "main": "index.js",
+  "main": "lambda.js",
   "config": {
     "s3BucketName": "st_osrm",
     "region": "us-west-1",

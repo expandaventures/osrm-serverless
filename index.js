@@ -1,2 +1,0 @@
-
-var osrm = nwq OSRM("")

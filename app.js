@@ -22,19 +22,21 @@ app.get('/', (req, res) => {
     apiUrl: req.apiGateway ? `https://${req.apiGateway.event.headers.Host}/${req.apiGateway.event.requestContext.stage}` : 'http://localhost:3000'
   })
 })
-
 app.get('/match', (req, res) => {
-  let options = {
-    let input = req.query.coordinates
+
+  let input = req.query.coordinates
     input = input.split(';')
-    coordinates = array()
-    for i = 0 i < input.length, i++{
-      a = input[i].split(',');
-      coordinates.push(a)
+    let coordinates = array()
+    for (var i = 0; i < input.length; i++) {
+        var a = input[i].split(',');
+        coordinates.push(a)
     }
-    coordinates: coordinates,
+
+    let options = {
+        coordinates: coordinates,
     timestamps: req.query.timestamp.split(';')
-  };
+    }
+
   osrm.match(options, function(err, response) {
       if (err) throw err;
       console.log(response.tracepoints); // array of Waypoint objects

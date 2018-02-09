@@ -5,10 +5,6 @@ const cors = require('cors')
 const compression = require('compression')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const app = express()
-const fs = require('fs')
-const cmd = require('node-cmd');
-
-node loc_env.js
 
 const OSRM = require('osrm');
 let osrm = new OSRM('${__dirname}data/mexico-latest.osrm');

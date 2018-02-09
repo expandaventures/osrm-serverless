@@ -6,16 +6,13 @@ const compression = require('compression')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const app = express()
 const fs = require('fs')
-const createSymlink = require('create-symlink');
+const cmd=require('node-cmd');
 
 let path = '/usr/local/lib64/node-v4.3.x/lib/'
 if (!fs.existsSync(path))
   fs.mkdirSync(path)
 
-createSymlink('/var/task/lib/libstdc++.so.6', path+'libstdc++.so.6').then(() => {
-  realpathSync('/var/task/lib/libstdc++.so.6'); //=> '/where/file/exists' 
-});
-
+cmd.run('ln -s /var/task/lib/libstdc++.so.6 /usr/local/lib64/node-v4.3.x/lib/libstdc++.so.6')
 
 const OSRM = require('osrm');
 let osrm = new OSRM('${__dirname}data/mexico-latest.osrm');

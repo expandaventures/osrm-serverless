@@ -6,13 +6,9 @@ const compression = require('compression')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const app = express()
 const fs = require('fs')
-const cmd=require('node-cmd');
+const cmd = require('node-cmd');
 
-let path = '/usr/local/lib64/node-v4.3.x/lib/'
-if (!fs.existsSync(path))
-  fs.mkdirSync(path)
-
-cmd.run('ln -s /var/task/lib/libstdc++.so.6 /usr/local/lib64/node-v4.3.x/lib/libstdc++.so.6')
+node loc_env.js
 
 const OSRM = require('osrm');
 let osrm = new OSRM('${__dirname}data/mexico-latest.osrm');
